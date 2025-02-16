@@ -1,8 +1,8 @@
+require("dotenv").config();
 import { ethers } from "ethers";
-import UserRegistrationABI from "../build/contracts/UserRegistration.json";
+import UserRegistrationABI from "./UserRegistration.json";
 
-// const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-const contractAddress = "0xECD93555Ab15cB815958AA79EC2b6a0EaA76E134";
+const contractAddress = process.env.CONTRACT_ADDRESS;
 
 if (!contractAddress) {
   throw new Error("❌ Contract address is missing.");
@@ -13,7 +13,7 @@ const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
 const getContract = (signer?: ethers.Signer) => {
   return new ethers.Contract(
     contractAddress,
-    UserRegistrationABI.abi,
+    UserRegistrationABI,
     signer || provider
   );
 };

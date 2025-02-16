@@ -7,7 +7,7 @@ import {
   getAllUsers,
   addInstitution,
   getAllUsersWithInstitutions,
-} from "../../utils/testContractInteractions";
+} from "../../utils/contractInteractions";
 
 export default function Admin() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { getUserInstitutions } from "../utils/testContractInteractions";
+import { getUserInstitutions } from "../utils/contractInteractions";
 import { motion } from "framer-motion";
 import IdentityCard from ".//component/identityCard";
 
