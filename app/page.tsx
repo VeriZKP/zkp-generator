@@ -8,7 +8,16 @@ import IdentityCard from ".//component/identityCard";
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [userInfo, setUserInfo] = useState([]); // Ensure this is an array
+  const [userInfo, setUserInfo] = useState<
+    {
+      preferredName: string;
+      idNumber: string;
+      title: string;
+      institution: string;
+      phone: string;
+      email: string;
+    }[]
+  >([]); // Ensure this is an array
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
