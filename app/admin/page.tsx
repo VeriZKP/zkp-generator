@@ -15,7 +15,18 @@ export default function Admin() {
   const [users, setUsers] = useState<{ wallet: string; realName: string }[]>(
     []
   );
-  const [userInstitutions, setUserInstitutions] = useState([]); // Stores users WITH institutions
+  const [userInstitutions, setUserInstitutions] = useState<
+    {
+      wallet: string;
+      realName: string;
+      preferredName: string;
+      idNumber: string;
+      title: string;
+      institution: string;
+      phone: string;
+      email: string;
+    }[]
+  >([]);
 
   // ** Tabs State **
   const [activeTab, setActiveTab] = useState("register");
