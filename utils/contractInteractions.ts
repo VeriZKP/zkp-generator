@@ -1,23 +1,45 @@
-require("dotenv").config();
 import { ethers } from "ethers";
 import UserRegistrationABI from "./UserRegistration.json";
 
-// Fetch private key from API
-const response = await fetch("/api/get-contract-address");
-const data = await response.json();
-const contractAddress = data.contractAddress;
+let contractAddress: string | null = null; // Store the contract address after first fetch
 
-if (!contractAddress) {
-  throw new Error("❌ Contract address is missing.");
-}
+// ✅ Function to Fetch Contract Address Securely
+const fetchContractAddress = async () => {
+  if (!contractAddress) {
+    try {
+      const response = await fetch("/api/get-contract-address");
+      const data = await response.json();
+      contractAddress = data.contractAddress;
 
-const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+      if (!contractAddress) {
+        throw new Error("❌ Contract address is missing.");
+      }
+    } catch (error) {
+      console.error("❌ Error fetching contract address:", error);
+      throw error;
+    }
+  }
+  return contractAddress;
+};
 
-const getContract = (signer?: ethers.Signer) => {
+// ✅ Function to Get Provider (MetaMask or Ganache)
+const getProvider = () => {
+  if (typeof window !== "undefined" && window.ethereum) {
+    return new ethers.BrowserProvider(window.ethereum); // MetaMask Provider
+  } else {
+    return new ethers.JsonRpcProvider("http://127.0.0.1:7545"); // Ganache Fallback
+  }
+};
+
+// ✅ Function to Get Smart Contract Instance
+const getContract = async (signer?: ethers.Signer) => {
+  const provider = getProvider();
+  const contractAddr = await fetchContractAddress(); // Ensure contract address is fetched
+
   return new ethers.Contract(
-    contractAddress,
-    UserRegistrationABI,
-    signer || provider
+    contractAddr,
+    UserRegistrationABI, // Ensure ABI is correctly structured
+    signer || (await provider) // Await provider if MetaMask is used
   );
 };
 
