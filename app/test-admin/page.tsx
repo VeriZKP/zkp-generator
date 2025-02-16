@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import {
   registerUser,
+  getAllUsers,
   addInstitution,
   getAllUsersWithInstitutions,
 } from "../../utils/testContractInteractions";
@@ -12,7 +13,8 @@ export default function Admin() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [provider, setProvider] = useState<ethers.JsonRpcProvider | null>(null);
   const [signer, setSigner] = useState<ethers.Wallet | null>(null);
-  const [users, setUsers] = useState([]); // Users list
+  const [users, setUsers] = useState([]); // Stores users (without institutions)
+  const [userInstitutions, setUserInstitutions] = useState([]); // Stores users WITH institutions
 
   // ** Tabs State **
   const [activeTab, setActiveTab] = useState("register");
@@ -67,8 +69,13 @@ export default function Admin() {
   /// ✅ **Fetch Users & Institutions**
   const fetchUsers = async () => {
     try {
-      const allUsers = await getAllUsersWithInstitutions();
+      // Fetch users for the dropdown
+      const allUsers = await getAllUsers();
       setUsers(allUsers);
+
+      // Fetch users with institutions for the table
+      const allUserInstitutions = await getAllUsersWithInstitutions();
+      setUserInstitutions(allUserInstitutions);
     } catch (error) {
       console.error("🚨 Error fetching users:", error);
     }
@@ -231,31 +238,36 @@ export default function Admin() {
                   Add Institution
                 </h2>
 
-                {/* User Wallet Address */}
-                <div className="flex flex-col mb-2">
-                  <label className="text-sm font-semibold mb-1">
-                    User Wallet Address
-                  </label>
-                  <input
-                    type="text"
-                    className="border p-2 w-full"
-                    value={institutionUser}
-                    onChange={(e) => setInstitutionUser(e.target.value)}
-                  />
-                </div>
+                {/* User Wallet Address Dropdown */}
+                <label className="block mb-1">User Wallet Address</label>
+                <select
+                  className="border p-2 w-full mb-2"
+                  value={institutionUser}
+                  onChange={(e) => {
+                    setInstitutionUser(e.target.value);
+                    const selectedUser = users.find(
+                      (user) => user.wallet === e.target.value
+                    );
+                    setPreferredName(selectedUser ? selectedUser.realName : ""); // Auto-fill preferred name
+                  }}
+                >
+                  <option value="">Select a Wallet</option>
+                  {users.map((user, index) => (
+                    <option key={index} value={user.wallet}>
+                      {user.wallet}
+                    </option>
+                  ))}
+                </select>
 
-                {/* Preferred Name */}
-                <div className="flex flex-col mb-2">
-                  <label className="text-sm font-semibold mb-1">
-                    Preferred Name
-                  </label>
-                  <input
-                    type="text"
-                    className="border p-2 w-full"
-                    value={preferredName}
-                    onChange={(e) => setPreferredName(e.target.value)}
-                  />
-                </div>
+                {/* Preferred Name Input */}
+                <label className="block mb-1">Preferred Name</label>
+                <input
+                  type="text"
+                  placeholder={preferredName || "Mandatory"}
+                  className="border p-2 w-full mb-2"
+                  value={preferredName}
+                  onChange={(e) => setPreferredName(e.target.value)}
+                />
 
                 {/* ID Number */}
                 <div className="flex flex-col mb-2">
@@ -264,6 +276,7 @@ export default function Admin() {
                   </label>
                   <input
                     type="text"
+                    placeholder="Mandatory"
                     className="border p-2 w-full"
                     value={idNumber}
                     onChange={(e) => setIdNumber(e.target.value)}
@@ -277,9 +290,49 @@ export default function Admin() {
                   </label>
                   <input
                     type="text"
+                    placeholder="Mandatory"
                     className="border p-2 w-full"
                     value={institution}
                     onChange={(e) => setInstitution(e.target.value)}
+                  />
+                </div>
+
+                {/* Title Selection */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold">Title:</label>
+                  <select
+                    className="border p-2 w-full"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  >
+                    <option value="Student">Student</option>
+                    <option value="Professor">Professor</option>
+                    <option value="Intern">Intern</option>
+                  </select>
+                </div>
+                {/* Phone Number */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold">Phone Number:</label>
+                  <input
+                    type="text"
+                    placeholder="Optional"
+                    className="border p-2 w-full"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                </div>
+
+                {/* Email Address */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold">
+                    Email Address:
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Optional"
+                    className="border p-2 w-full"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
 
@@ -302,20 +355,30 @@ export default function Admin() {
                 <th className="border border-gray-300 px-4 py-2">Wallet</th>
                 <th className="border border-gray-300 px-4 py-2">Real Name</th>
                 <th className="border border-gray-300 px-4 py-2">
+                  Preferred Name
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
                   Institution
                 </th>
                 <th className="border border-gray-300 px-4 py-2">Title</th>
                 <th className="border border-gray-300 px-4 py-2">ID Number</th>
+                <th className="border border-gray-300 px-4 py-2">Phone</th>
+                <th className="border border-gray-300 px-4 py-2">Email</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {userInstitutions.map((user, index) => (
                 <tr key={index} className="text-center">
-                  <td className="border px-4 py-2">{user.wallet}</td>
+                  <td className="border px-4 py-2 truncate max-w-[120px]">
+                    {user.wallet}
+                  </td>
                   <td className="border px-4 py-2">{user.realName}</td>
+                  <td className="border px-4 py-2">{user.preferredName}</td>
                   <td className="border px-4 py-2">{user.institution}</td>
                   <td className="border px-4 py-2">{user.title}</td>
                   <td className="border px-4 py-2">{user.idNumber}</td>
+                  <td className="border px-4 py-2">{user.phone}</td>
+                  <td className="border px-4 py-2">{user.email}</td>
                 </tr>
               ))}
             </tbody>

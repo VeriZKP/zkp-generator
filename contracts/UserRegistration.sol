@@ -44,6 +44,20 @@ contract UserRegistration {
         emit UserRegistered(_user, _realName);
     }
 
+    function getAllUsers() public view returns (address[] memory, string[] memory) {
+        uint256 totalUsers = userAddresses.length;
+        address[] memory wallets = new address[](totalUsers);
+        string[] memory realNames = new string[](totalUsers);
+
+        for (uint256 i = 0; i < totalUsers; i++) {
+            address userAddr = userAddresses[i];
+            wallets[i] = userAddr;
+            realNames[i] = users[userAddr].realName;
+        }
+
+        return (wallets, realNames);
+    }
+
     function addInstitution(
         address _user,
         string memory _preferredName,
@@ -85,5 +99,19 @@ contract UserRegistration {
         }
 
         return (wallets, realNames, institutions);
+    }
+
+    function getUserInstitutions(address _user)
+        public
+        view
+        returns (
+            string memory realName,
+            bool isRegistered,
+            Institution[] memory institutions
+        )
+    {
+        require(users[_user].isRegistered, "User not found");
+        User storage u = users[_user];
+        return (u.realName, u.isRegistered, u.institutions);
     }
 }

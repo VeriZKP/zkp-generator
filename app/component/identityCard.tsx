@@ -9,9 +9,16 @@ interface IdentityCardProps {
   organization: string;
   phone_number?: string;
   email?: string;
-  color_1: string;
-  color_2: string;
 }
+
+// Define institution color mappings
+const institutionColors: {
+  [key: string]: { color_1: string; color_2: string };
+} = {
+  SIT: { color_1: "#231F20", color_2: "#ED1C24" },
+  UOB: { color_1: "#005EB8", color_2: "#ED1C24" },
+  DEFAULT: { color_1: "#000000", color_2: "#FFFFFF" },
+};
 
 const IdentityCard: React.FC<IdentityCardProps> = ({
   name,
@@ -20,9 +27,10 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
   organization,
   phone_number,
   email,
-  color_1,
-  color_2,
 }) => {
+  const { color_1, color_2 } =
+    institutionColors[organization] || institutionColors["DEFAULT"];
+
   return (
     <div
       className="relative sm:w-full sm:aspect-[376/528] rounded-xl shadow-lg overflow-hidden text-white p-4"
@@ -34,7 +42,9 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
         id="card-header"
         className="flex items-center justify-start w-full h-[10%]"
       >
-        <span className="font-bold font-mono text-4xl ">{organization}</span>
+        <span className="font-bold font-mono text-6xl ">
+          {organization.toUpperCase()}
+        </span>
       </div>
       <div
         id="card-body"
@@ -49,7 +59,9 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
         id="card-footer"
         className="flex items-center justify-end w-full h-[10%]"
       >
-        <span className="font-bold font-mono text-4xl ">{title}</span>
+        <span className="font-bold font-mono text-6xl">
+          {title.toUpperCase()}
+        </span>
       </div>
     </div>
   );

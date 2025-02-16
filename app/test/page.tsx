@@ -1,16 +1,22 @@
 "use client";
 require("dotenv").config();
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { getUser } from "../../utils/testContractInteractions";
+import { getUserInstitutions } from "../../utils/testContractInteractions";
+import { motion } from "framer-motion";
 import IdentityCard from "../component/identityCard";
 
 export default function Home() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [userInfo, setUserInfo] = useState([]); // Ensure this is an array
   const [loading, setLoading] = useState(false);
-  const [proof, setProof] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (walletAddress) {
+      fetchUserData(walletAddress);
+    }
+  }, [walletAddress]);
 
   const connectGanache = async () => {
     try {
@@ -36,29 +42,33 @@ export default function Home() {
   // ✅ Fetch user details from smart contract
   const fetchUserData = async (address) => {
     setLoading(true);
-    const data = await getUser(address);
-    setUserInfo(data);
+    const data = await getUserInstitutions(address);
+
+    if (data) {
+      setUserInfo(data.institutions);
+      console.log(data.institutions);
+    } else {
+      setUserInfo([]);
+    }
     setLoading(false);
   };
 
   const disconnectGanache = () => {
     setWalletAddress(null); // Clears wallet address
-    setUserInfo(null);
+    setUserInfo([]);
   };
 
-  // ✅ Generate ZKP Proof and open modal
-  const handleGenerateProof = async () => {
-    if (!userInfo) {
-      alert("No user data available.");
-      return;
+  // ✅ Navigation Functions
+  const nextCard = () => {
+    if (userInfo.length > 0) {
+      setCurrentIndex((prev) => (prev + 1) % userInfo.length);
     }
+  };
 
-    // Generate proof
-    const zkpData = await generateZKP(userInfo.name, "2302993", userInfo.title);
-    const proofString = JSON.stringify(zkpData);
-
-    setProof(proofString);
-    setIsModalOpen(true);
+  const prevCard = () => {
+    if (userInfo.length > 0) {
+      setCurrentIndex((prev) => (prev - 1 + userInfo.length) % userInfo.length);
+    }
   };
 
   return (
@@ -67,11 +77,11 @@ export default function Home() {
       className="flex flex-col sm:h-screen sm:w-[calc(100vh*(440/956))] min-w-[440px] bg-white"
       style={{ boxShadow: "0 0 0 1px black" }}
     >
+      {/* 🔹 Header */}
       <header
         className="flex items-center justify-between w-full h-[10%] p-4 gap-4"
         style={{ boxShadow: "0 0 0 1px black" }}
       >
-        {/* Wallet Connection Section */}
         <p className="truncate text-lg max-w-[70%]">
           Wallet:{" "}
           <span className="font-semibold">
@@ -89,49 +99,69 @@ export default function Home() {
           {walletAddress ? "Disconnect" : "Connect"}
         </button>
       </header>
+
       {/* 🔹 Main Content Section */}
-      <main className="flex flex-col items-center justify-start w-full flex-grow p-8">
+      <main className="flex items-center justify-center w-full flex-grow relative p-8">
         {loading ? (
           <p>Loading User Data...</p>
-        ) : userInfo && userInfo.isRegistered ? (
-          <IdentityCard
-            name={userInfo.name}
-            id="2302993"
-            title={userInfo.title}
-            organization="SIT"
-            phone_number={userInfo.phoneNumber}
-            email={userInfo.email}
-            color_1="#231F20"
-            color_2="#ED1C24"
-          />
+        ) : userInfo.length > 0 ? (
+          <div className="relative w-full h-full overflow-x-hidden">
+            {/* Motion Container */}
+            <motion.div
+              className="flex h-auto"
+              animate={{ x: `-${currentIndex * 100}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {userInfo.map((identity, index) => (
+                <div key={index} className="flex justify-center min-w-full">
+                  <IdentityCard
+                    name={identity.preferredName}
+                    id={identity.idNumber}
+                    title={identity.title}
+                    organization={identity.institution}
+                    phone_number={identity.phone}
+                    email={identity.email}
+                  />
+                </div>
+              ))}
+            </motion.div>
+
+            {/* Navigation Buttons */}
+            {userInfo.length > 1 && (
+              <div
+                id="buttons"
+                className="flex justify-between items-center w-full flex-grow mt-8"
+              >
+                <button
+                  className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
+                  onClick={prevCard}
+                >
+                  ◀
+                </button>
+
+                {/* Generate Proof Button (Centered) */}
+                <button
+                  className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-2xl font-semibold rounded-lg shadow-md hover:bg-blue-800"
+                  onClick={() => {}}
+                >
+                  Generate Proof
+                </button>
+
+                <button
+                  className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
+                  onClick={nextCard}
+                >
+                  ▶
+                </button>
+              </div>
+            )}
+          </div>
         ) : (
-          <p className="text-red-500">User not registered.</p>
+          <p className="text-red-500">No registered institutions found.</p>
         )}
       </main>
-      <footer className="flex items-center justify-center w-full h-[10%] p-4 border-t">
-        <button
-          onClick={handleGenerateProof}
-          className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-800"
-        >
-          Generate Proof
-        </button>
-      </footer>
-      {/* 🔹 Modal for QR Code */}
-      {isModalOpen && proof && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-80 text-center">
-            <h2 className="text-lg font-semibold mb-2">ZKP Proof</h2>
-            <QRCode value={proof} size={200} />
-            <p className="text-sm text-gray-500 mt-2">Scan to verify</p>
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+
+      <footer className="flex items-center justify-center w-full h-[10%] p-4 border-t"></footer>
     </div>
   );
 }

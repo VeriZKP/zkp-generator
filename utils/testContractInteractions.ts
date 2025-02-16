@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 import UserRegistrationABI from "../build/contracts/UserRegistration.json";
 
-const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+// const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const contractAddress = "0xECD93555Ab15cB815958AA79EC2b6a0EaA76E134";
 
 if (!contractAddress) {
   throw new Error("❌ Contract address is missing.");
@@ -30,6 +31,27 @@ export const registerUser = async (
     console.log(`✅ User registered: ${realName} - ${userAddress}`);
   } catch (error) {
     console.error("❌ Error registering user:", error);
+  }
+};
+
+// ✅ Fetch All Users (Without Institutions)
+export const getAllUsers = async () => {
+  try {
+    const contract = getContract();
+    const [wallets, realNames] = await contract.getAllUsers();
+
+    let usersData = [];
+    for (let i = 0; i < wallets.length; i++) {
+      usersData.push({
+        wallet: wallets[i],
+        realName: realNames[i],
+      });
+    }
+
+    return usersData;
+  } catch (error) {
+    console.error("❌ Error fetching all users:", error);
+    return [];
   }
 };
 
@@ -89,5 +111,34 @@ export const getAllUsersWithInstitutions = async () => {
   } catch (error) {
     console.error("❌ Error fetching users & institutions:", error);
     return [];
+  }
+};
+
+// ✅ Fetch All Institutions of a User
+export const getUserInstitutions = async (walletAddress) => {
+  try {
+    const contract = getContract();
+    const [realName, isRegistered, institutions] =
+      await contract.getUserInstitutions(walletAddress);
+
+    if (!isRegistered) {
+      return null;
+    }
+
+    return {
+      realName,
+      isRegistered,
+      institutions: institutions.map((inst) => ({
+        preferredName: inst.preferredName,
+        idNumber: inst.idNumber,
+        title: inst.title,
+        institution: inst.institution,
+        phone: inst.phoneNumber,
+        email: inst.email,
+      })),
+    };
+  } catch (error) {
+    console.error("❌ Error fetching user institutions:", error);
+    return null;
   }
 };

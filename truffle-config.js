@@ -7,7 +7,7 @@ module.exports = {
       host: "127.0.0.1", // Localhost for Ganache
       port: 7545, // Ganache default RPC port
       network_id: "*", // Match any network
-      gas: 672197500, // ⬆ Increase Gas Limit (default: 6721975)
+      gas: 100000000, // ⬆ Increase Gas Limit (default: 6721975)
       gasPrice: 20000000000, // ⬆ Increase Gas Price (20 Gwei = 20 * 10^9)
     },
   },
