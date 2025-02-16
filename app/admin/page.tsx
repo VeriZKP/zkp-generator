@@ -12,7 +12,9 @@ import {
 export default function Admin() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
-  const [users, setUsers] = useState([]); // Stores users (without institutions)
+  const [users, setUsers] = useState<{ wallet: string; realName: string }[]>(
+    []
+  );
   const [userInstitutions, setUserInstitutions] = useState([]); // Stores users WITH institutions
 
   // ** Tabs State **
