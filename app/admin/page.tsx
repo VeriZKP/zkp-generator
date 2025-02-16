@@ -11,7 +11,7 @@ import {
 
 export default function Admin() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [signer, setSigner] = useState<ethers.Wallet | null>(null);
+  const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
   const [users, setUsers] = useState([]); // Stores users (without institutions)
   const [userInstitutions, setUserInstitutions] = useState([]); // Stores users WITH institutions
 
@@ -36,12 +36,10 @@ export default function Admin() {
     if (window.ethereum) {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []); // Request accounts
-
+        const accounts = await provider.send("eth_requestAccounts", []); // Request accounts
         const signer = await provider.getSigner(); // Get signer from MetaMask
-        const address = await signer.getAddress(); // Get connected wallet address
 
-        setWalletAddress(address);
+        setWalletAddress(accounts[0]);
         setSigner(signer);
 
         fetchUsers(); // Fetch users after connecting
