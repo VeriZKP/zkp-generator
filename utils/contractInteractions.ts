@@ -153,14 +153,23 @@ export const getUserInstitutions = async (walletAddress: string) => {
     return {
       realName,
       isRegistered,
-      institutions: institutions.map((inst) => ({
-        preferredName: inst.preferredName,
-        idNumber: inst.idNumber,
-        title: inst.title,
-        institution: inst.institution,
-        phone: inst.phoneNumber,
-        email: inst.email,
-      })),
+      institutions: institutions.map(
+        (inst: {
+          preferredName: string;
+          idNumber: string;
+          title: string;
+          institution: string;
+          phoneNumber: string;
+          email: string;
+        }) => ({
+          preferredName: inst.preferredName,
+          idNumber: inst.idNumber,
+          title: inst.title,
+          institution: inst.institution,
+          phone: inst.phoneNumber,
+          email: inst.email,
+        })
+      ),
     };
   } catch (error) {
     console.error("❌ Error fetching user institutions:", error);
