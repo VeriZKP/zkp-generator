@@ -14,6 +14,9 @@ export default function Admin() {
   const [signer, setSigner] = useState<ethers.Wallet | null>(null);
   const [users, setUsers] = useState([]); // Users list
 
+  // ** Tabs State **
+  const [activeTab, setActiveTab] = useState("register");
+
   // ** User Registration Form State **
   const [userAddress, setUserAddress] = useState("");
   const [realName, setRealName] = useState("");
@@ -155,75 +158,143 @@ export default function Admin() {
         </button>
       </header>
 
-      <main className="flex justify-center w-full flex-grow p-8 gap-8">
-        {/* Register User Form */}
-        <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
-          <h2 className="text-xl font-bold mb-4 text-center">Register User</h2>
-          <input
-            type="text"
-            placeholder="User Wallet Address"
-            className="border p-2 w-full mb-2"
-            value={userAddress}
-            onChange={(e) => setUserAddress(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Real Name"
-            className="border p-2 w-full mb-2"
-            value={realName}
-            onChange={(e) => setRealName(e.target.value)}
-          />
-          <button
-            onClick={handleRegisterUser}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
-          >
-            Register User
-          </button>
-        </div>
+      <main className="flex justify-center w-full h-[90%] flex-grow p-8 gap-8">
+        <div id="forms" className="flex flex-col w-[50%] gap-8">
+          {/* Tab Navigation */}
+          <div className="flex">
+            <button
+              onClick={() => setActiveTab("register")}
+              className={`flex-1 p-3 text-center font-semibold rounded-t-md ${
+                activeTab === "register"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Register User
+            </button>
+            <button
+              onClick={() => setActiveTab("institution")}
+              className={`flex-1 p-3 text-center font-semibold rounded-t-md ${
+                activeTab === "institution"
+                  ? "bg-green-500 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              Add Institution
+            </button>
+          </div>
 
-        {/* Add Institution Form */}
-        <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
-          <h2 className="text-xl font-bold mb-4 text-center">
-            Add Institution
-          </h2>
-          <input
-            type="text"
-            placeholder="User Wallet Address"
-            className="border p-2 w-full mb-2"
-            value={institutionUser}
-            onChange={(e) => setInstitutionUser(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Preferred Name"
-            className="border p-2 w-full mb-2"
-            value={preferredName}
-            onChange={(e) => setPreferredName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="ID Number"
-            className="border p-2 w-full mb-2"
-            value={idNumber}
-            onChange={(e) => setIdNumber(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Institution Name"
-            className="border p-2 w-full mb-2"
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-          />
-          <button
-            onClick={handleAddInstitution}
-            className="bg-green-500 text-white px-4 py-2 rounded-md w-full"
-          >
-            Add Institution
-          </button>
-        </div>
+          {/* Form Content */}
+          <div className="p-6 border rounded-lg shadow-lg w-full h-screen overflow-y-scroll">
+            {activeTab === "register" ? (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-center">
+                  Register User
+                </h2>
 
+                {/* User Wallet Address */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    User Wallet Address
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={userAddress}
+                    onChange={(e) => setUserAddress(e.target.value)}
+                  />
+                </div>
+
+                {/* Real Name */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    Real Name
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={realName}
+                    onChange={(e) => setRealName(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  onClick={handleRegisterUser}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
+                >
+                  Register User
+                </button>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-center">
+                  Add Institution
+                </h2>
+
+                {/* User Wallet Address */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    User Wallet Address
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={institutionUser}
+                    onChange={(e) => setInstitutionUser(e.target.value)}
+                  />
+                </div>
+
+                {/* Preferred Name */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    Preferred Name
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={preferredName}
+                    onChange={(e) => setPreferredName(e.target.value)}
+                  />
+                </div>
+
+                {/* ID Number */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    ID Number
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={idNumber}
+                    onChange={(e) => setIdNumber(e.target.value)}
+                  />
+                </div>
+
+                {/* Institution Name */}
+                <div className="flex flex-col mb-2">
+                  <label className="text-sm font-semibold mb-1">
+                    Institution Name
+                  </label>
+                  <input
+                    type="text"
+                    className="border p-2 w-full"
+                    value={institution}
+                    onChange={(e) => setInstitution(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  onClick={handleAddInstitution}
+                  className="bg-green-500 text-white px-4 py-2 rounded-md w-full"
+                >
+                  Add Institution
+                </button>
+              </>
+            )}
+          </div>
+        </div>
         {/* Users & Institutions Table */}
-        <div className="w-full">
+        <div id="table" className="w-[50%] overflow-x-scroll">
           <h2 className="text-xl font-bold mb-4">Users & Institutions</h2>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
