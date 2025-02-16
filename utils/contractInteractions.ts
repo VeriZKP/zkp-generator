@@ -50,7 +50,7 @@ export const registerUser = async (
   realName: string
 ) => {
   try {
-    const contract = getContract(adminSigner);
+    const contract = await getContract(adminSigner);
     const tx = await contract.registerUser(userAddress, realName);
     await tx.wait();
     console.log(`✅ User registered: ${realName} - ${userAddress}`);
@@ -62,7 +62,7 @@ export const registerUser = async (
 // ✅ Fetch All Users (Without Institutions)
 export const getAllUsers = async () => {
   try {
-    const contract = getContract();
+    const contract = await getContract();
     const [wallets, realNames] = await contract.getAllUsers();
 
     let usersData = [];
@@ -92,7 +92,7 @@ export const addInstitution = async (
   email: string
 ) => {
   try {
-    const contract = getContract(adminSigner);
+    const contract = await getContract(adminSigner);
     const tx = await contract.addInstitution(
       userAddress,
       preferredName,
@@ -112,7 +112,7 @@ export const addInstitution = async (
 // ✅ Fetch All Users & Their Institutions
 export const getAllUsersWithInstitutions = async () => {
   try {
-    const contract = getContract();
+    const contract = await getContract();
     const [wallets, realNames, institutions] =
       await contract.getAllUsersWithInstitutions();
 
@@ -142,7 +142,7 @@ export const getAllUsersWithInstitutions = async () => {
 // ✅ Fetch All Institutions of a User
 export const getUserInstitutions = async (walletAddress) => {
   try {
-    const contract = getContract();
+    const contract = await getContract();
     const [realName, isRegistered, institutions] =
       await contract.getUserInstitutions(walletAddress);
 
