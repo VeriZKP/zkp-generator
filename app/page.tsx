@@ -36,7 +36,7 @@ export default function Home() {
   };
 
   // ✅ Fetch user details from smart contract
-  const fetchUserData = async (address) => {
+  const fetchUserData = async (address: string) => {
     setLoading(true);
     const data = await getUserInstitutions(address);
 
