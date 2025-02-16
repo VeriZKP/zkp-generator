@@ -13,7 +13,6 @@ export default function Admin() {
   const [provider, setProvider] = useState<ethers.JsonRpcProvider | null>(null);
   const [signer, setSigner] = useState<ethers.Wallet | null>(null);
   const [users, setUsers] = useState([]); // Users list
-  const [institutions, setInstitutions] = useState([]); // Institutions list
 
   // ** User Registration Form State **
   const [userAddress, setUserAddress] = useState("");
@@ -60,35 +59,73 @@ export default function Admin() {
     setWalletAddress(null);
     setSigner(null);
     setUsers([]);
-    setInstitutions([]);
   };
 
-  // ** Fetch Users and Institutions **
-  // ✅ Fetch Users
+  /// ✅ **Fetch Users & Institutions**
   const fetchUsers = async () => {
-    const allUsers = await getAllUsersWithInstitutions();
-    setUsers(allUsers);
+    try {
+      const allUsers = await getAllUsersWithInstitutions();
+      setUsers(allUsers);
+    } catch (error) {
+      console.error("🚨 Error fetching users:", error);
+    }
   };
 
-  // ✅ Handle Register User
+  // ✅ **Handle Register User**
   const handleRegisterUser = async () => {
-    await registerUser(signer, userAddress, realName);
-    fetchUsers();
+    if (!signer) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    if (!userAddress || !realName) {
+      alert("All fields are required.");
+      return;
+    }
+
+    try {
+      await registerUser(signer, userAddress, realName);
+      alert(`✅ User ${realName} registered successfully!`);
+      fetchUsers();
+    } catch (error) {
+      console.error("🚨 Error registering user:", error);
+    }
   };
 
-  // ✅ Handle Add Institution
+  // ✅ **Handle Add Institution**
   const handleAddInstitution = async () => {
-    await addInstitution(
-      signer,
-      institutionUser,
-      preferredName,
-      idNumber,
-      title,
-      institution,
-      phone,
-      email
-    );
-    fetchUsers();
+    if (!signer) {
+      alert("Please connect your wallet first!");
+      return;
+    }
+
+    if (
+      !institutionUser ||
+      !preferredName ||
+      !idNumber ||
+      !title ||
+      !institution
+    ) {
+      alert("All fields are required.");
+      return;
+    }
+
+    try {
+      await addInstitution(
+        signer,
+        institutionUser,
+        preferredName,
+        idNumber,
+        title,
+        institution,
+        phone,
+        email
+      );
+      alert(`✅ Institution ${institution} added successfully!`);
+      fetchUsers();
+    } catch (error) {
+      console.error("🚨 Error adding institution:", error);
+    }
   };
 
   return (
@@ -119,87 +156,74 @@ export default function Admin() {
       </header>
 
       <main className="flex justify-center w-full flex-grow p-8 gap-8">
-        <div id="forms" className="flex flex-col gap-8">
-          {/* Register User Form */}
-          <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              Register User
-            </h2>
-            <input
-              type="text"
-              placeholder="User Wallet Address"
-              className="border p-2 w-full mb-2"
-              value={userAddress}
-              onChange={(e) => setUserAddress(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Real Name"
-              className="border p-2 w-full mb-2"
-              value={realName}
-              onChange={(e) => setRealName(e.target.value)}
-            />
-            <button
-              onClick={handleRegisterUser}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
-            >
-              Register User
-            </button>
-          </div>
-
-          {/* Add Institution Form */}
-          <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              Add Institution
-            </h2>
-            <input
-              type="text"
-              placeholder="User Wallet Address"
-              className="border p-2 w-full mb-2"
-              value={institutionUser}
-              onChange={(e) => setInstitutionUser(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Preferred Name"
-              className="border p-2 w-full mb-2"
-              value={preferredName}
-              onChange={(e) => setPreferredName(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="ID Number"
-              className="border p-2 w-full mb-2"
-              value={idNumber}
-              onChange={(e) => setIdNumber(e.target.value)}
-            />
-            <select
-              className="border p-2 w-full mb-2"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            >
-              <option value="Student">Student</option>
-              <option value="Intern">Intern</option>
-              <option value="Professor">Professor</option>
-            </select>
-            <input
-              type="text"
-              placeholder="Institution Name"
-              className="border p-2 w-full mb-2"
-              value={institution}
-              onChange={(e) => setInstitution(e.target.value)}
-            />
-            <button
-              onClick={handleAddInstitution}
-              className="bg-green-500 text-white px-4 py-2 rounded-md w-full"
-            >
-              Add Institution
-            </button>
-          </div>
+        {/* Register User Form */}
+        <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
+          <h2 className="text-xl font-bold mb-4 text-center">Register User</h2>
+          <input
+            type="text"
+            placeholder="User Wallet Address"
+            className="border p-2 w-full mb-2"
+            value={userAddress}
+            onChange={(e) => setUserAddress(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Real Name"
+            className="border p-2 w-full mb-2"
+            value={realName}
+            onChange={(e) => setRealName(e.target.value)}
+          />
+          <button
+            onClick={handleRegisterUser}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md w-full"
+          >
+            Register User
+          </button>
         </div>
 
-        {/* Table Displaying All Users and Institutions */}
-        <div id="table" className="w-full">
+        {/* Add Institution Form */}
+        <div className="p-6 border rounded-lg shadow-lg w-full max-w-lg">
+          <h2 className="text-xl font-bold mb-4 text-center">
+            Add Institution
+          </h2>
+          <input
+            type="text"
+            placeholder="User Wallet Address"
+            className="border p-2 w-full mb-2"
+            value={institutionUser}
+            onChange={(e) => setInstitutionUser(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Preferred Name"
+            className="border p-2 w-full mb-2"
+            value={preferredName}
+            onChange={(e) => setPreferredName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="ID Number"
+            className="border p-2 w-full mb-2"
+            value={idNumber}
+            onChange={(e) => setIdNumber(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Institution Name"
+            className="border p-2 w-full mb-2"
+            value={institution}
+            onChange={(e) => setInstitution(e.target.value)}
+          />
+          <button
+            onClick={handleAddInstitution}
+            className="bg-green-500 text-white px-4 py-2 rounded-md w-full"
+          >
+            Add Institution
+          </button>
+        </div>
+
+        {/* Users & Institutions Table */}
+        <div className="w-full">
           <h2 className="text-xl font-bold mb-4">Users & Institutions</h2>
           <table className="w-full border-collapse border border-gray-300">
             <thead>
@@ -214,23 +238,13 @@ export default function Admin() {
               </tr>
             </thead>
             <tbody>
-              {institutions.map((inst, index) => (
+              {users.map((user, index) => (
                 <tr key={index} className="text-center">
-                  <td className="border border-gray-300 px-4 py-2">
-                    {inst.wallet}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {inst.realName}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {inst.institution}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {inst.title}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {inst.idNumber}
-                  </td>
+                  <td className="border px-4 py-2">{user.wallet}</td>
+                  <td className="border px-4 py-2">{user.realName}</td>
+                  <td className="border px-4 py-2">{user.institution}</td>
+                  <td className="border px-4 py-2">{user.title}</td>
+                  <td className="border px-4 py-2">{user.idNumber}</td>
                 </tr>
               ))}
             </tbody>

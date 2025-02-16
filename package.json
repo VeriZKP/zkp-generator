@@ -14,7 +14,8 @@
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "snarkjs": "^0.7.5"
+    "snarkjs": "^0.7.5",
+    "solc": "^0.8.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

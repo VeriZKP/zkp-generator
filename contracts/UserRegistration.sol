@@ -16,11 +16,10 @@ contract UserRegistration {
     struct User {
         string realName;
         bool isRegistered;
+        Institution[] institutions;
     }
 
     mapping(address => User) public users;
-    mapping(address => Institution[]) public userInstitutions; // 🔥 Better way to store institutions
-
     address[] public userAddresses;
 
     modifier onlyAdmin() {
@@ -38,7 +37,8 @@ contract UserRegistration {
     function registerUser(address _user, string memory _realName) public onlyAdmin {
         require(!users[_user].isRegistered, "User already registered");
 
-        users[_user] = User(_realName, true);
+        users[_user].realName = _realName;
+        users[_user].isRegistered = true;
         userAddresses.push(_user);
 
         emit UserRegistered(_user, _realName);
@@ -55,24 +55,35 @@ contract UserRegistration {
     ) public onlyAdmin {
         require(users[_user].isRegistered, "User not registered");
 
-        userInstitutions[_user].push(Institution(_preferredName, _idNumber, _title, _institution, _phoneNumber, _email));
+        users[_user].institutions.push(Institution(
+            _preferredName,
+            _idNumber,
+            _title,
+            _institution,
+            _phoneNumber,
+            _email
+        ));
 
         emit InstitutionAdded(_user, _institution, _title, _idNumber);
     }
 
-    function getAllUsersWithInstitutions() public view returns (address[] memory, string[] memory, Institution[][] memory) {
+    function getAllUsersWithInstitutions() public view returns (
+        address[] memory,
+        string[] memory,
+        Institution[][] memory
+    ) {
         uint256 totalUsers = userAddresses.length;
-        address[] memory userWallets = new address[](totalUsers);
-        string[] memory userRealNames = new string[](totalUsers);
-        Institution[][] memory allInstitutions = new Institution[][](totalUsers);
+        address[] memory wallets = new address[](totalUsers);
+        string[] memory realNames = new string[](totalUsers);
+        Institution[][] memory institutions = new Institution[][](totalUsers);
 
         for (uint256 i = 0; i < totalUsers; i++) {
             address userAddr = userAddresses[i];
-            userWallets[i] = userAddr;
-            userRealNames[i] = users[userAddr].realName;
-            allInstitutions[i] = userInstitutions[userAddr];
+            wallets[i] = userAddr;
+            realNames[i] = users[userAddr].realName;
+            institutions[i] = users[userAddr].institutions;
         }
 
-        return (userWallets, userRealNames, allInstitutions);
+        return (wallets, realNames, institutions);
     }
 }
