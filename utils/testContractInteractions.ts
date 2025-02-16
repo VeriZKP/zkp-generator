@@ -1,8 +1,11 @@
+require("dotenv").config();
 import { ethers } from "ethers";
 import UserRegistrationABI from "../build/contracts/UserRegistration.json";
 
-// const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-const contractAddress = "0xECD93555Ab15cB815958AA79EC2b6a0EaA76E134";
+// Fetch private key from API
+const response = await fetch("/api/get-contract-address");
+const data = await response.json();
+const contractAddress = data.contractAddress;
 
 if (!contractAddress) {
   throw new Error("❌ Contract address is missing.");
