@@ -140,7 +140,7 @@ export const getAllUsersWithInstitutions = async () => {
 };
 
 // ✅ Fetch All Institutions of a User
-export const getUserInstitutions = async (walletAddress) => {
+export const getUserInstitutions = async (walletAddress: string) => {
   try {
     const contract = await getContract();
     const [realName, isRegistered, institutions] =
