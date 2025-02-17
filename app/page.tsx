@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <div
       id="device-setter"
-      className="flex flex-col sm:h-screen sm:w-[calc(100vh*(440/956))] min-w-[440px] bg-white"
+      className="flex flex-col w-screen h-screen sm:h-screen sm:w-[calc(100vh*(440/956))] min-w-[440px] bg-white overlow-hidden"
       style={{ boxShadow: "0 0 0 1px black" }}
     >
       {/* 🔹 Header */}
@@ -82,7 +82,7 @@ export default function Home() {
         className="flex items-center justify-between w-full h-[10%] p-4 gap-4"
         style={{ boxShadow: "0 0 0 1px black" }}
       >
-        <p className="truncate text-lg max-w-[70%]">
+        <p className="truncate text-lg max-w-[60%] sm:max-w-[70%]">
           Wallet:{" "}
           <span className="font-semibold">
             {walletAddress ? walletAddress : "Not connected"}
@@ -125,36 +125,36 @@ export default function Home() {
                 </div>
               ))}
             </motion.div>
-
             {/* Navigation Buttons */}
-            {userInfo.length > 1 && (
-              <div
-                id="buttons"
-                className="flex justify-between items-center w-full flex-grow mt-8"
-              >
+            <div
+              id="buttons"
+              className="flex justify-between items-center w-full flex-grow mt-8"
+            >
+              {userInfo.length > 1 && (
                 <button
                   className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
                   onClick={prevCard}
                 >
                   ◀
                 </button>
+              )}
 
-                {/* Generate Proof Button (Centered) */}
-                <button
-                  className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-2xl font-semibold rounded-lg shadow-md hover:bg-blue-800"
-                  onClick={() => {}}
-                >
-                  Generate Proof
-                </button>
-
+              {/* Generate Proof Button (Centered) */}
+              <button
+                className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-2xl font-semibold rounded-lg shadow-md hover:bg-blue-800"
+                onClick={() => {}}
+              >
+                Generate Proof
+              </button>
+              {userInfo.length > 1 && (
                 <button
                   className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
                   onClick={nextCard}
                 >
                   ▶
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ) : (
           <p className="text-red-500">No registered institutions found.</p>
