@@ -126,35 +126,40 @@ export default function Home() {
               ))}
             </motion.div>
             {/* Navigation Buttons */}
-            <div
-              id="buttons"
-              className="flex justify-between items-center w-full flex-grow mt-8"
-            >
-              {userInfo.length > 1 && (
-                <button
-                  className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
-                  onClick={prevCard}
-                >
-                  ◀
-                </button>
-              )}
-
-              {/* Generate Proof Button (Centered) */}
-              <button
-                className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-2xl font-semibold rounded-lg shadow-md hover:bg-blue-800"
-                onClick={() => {}}
+            {userInfo.length > 0 && (
+              <div
+                id="buttons"
+                className={`flex items-center w-full flex-grow mt-8 ${
+                  userInfo.length > 1 ? "justify-between" : "justify-center"
+                }`}
               >
-                Generate Proof
-              </button>
-              {userInfo.length > 1 && (
+                {userInfo.length > 1 && (
+                  <button
+                    className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
+                    onClick={prevCard}
+                  >
+                    ◀
+                  </button>
+                )}
+
+                {/* Generate Proof Button (Centered if only 1 item) */}
                 <button
-                  className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
-                  onClick={nextCard}
+                  className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-2xl font-semibold rounded-lg shadow-md hover:bg-blue-800"
+                  onClick={() => {}}
                 >
-                  ▶
+                  Generate Proof
                 </button>
-              )}
-            </div>
+
+                {userInfo.length > 1 && (
+                  <button
+                    className="flex items-center justify-center w-12 aspect-square bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700"
+                    onClick={nextCard}
+                  >
+                    ▶
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-red-500">No registered institutions found.</p>
