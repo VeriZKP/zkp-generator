@@ -33,7 +33,7 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
 
   return (
     <div
-      className="relative sm:w-full sm:aspect-[376/528] rounded-xl shadow-lg overflow-hidden text-white p-4"
+      className="relative w-full aspect-[376/528] rounded-xl shadow-lg overflow-hidden text-white p-4"
       style={{
         background: `linear-gradient(45deg, ${color_1} 40%, ${color_2} 100%)`,
       }}
