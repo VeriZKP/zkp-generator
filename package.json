@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "circomlib": "^2.0.5",
     "dotenv": "^16.4.7",
     "next": "15.1.6",
     "qrcode.react": "^4.2.0",
