@@ -135,7 +135,6 @@ contract ERC5727SBT is ERC721URIStorage, AccessControl {
     }
 
     // ✅ Get all issued token details for the caller
-    // ✅ Get all issued token details for the caller
     function getAllIssuedTokenDetails()
         external
         view
