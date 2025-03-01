@@ -19,11 +19,9 @@
 */
 
 
-pragma solidity ^0.8.0;
+pragma solidity >=0.7.0 <0.9.0;
 
 contract PlonkVerifier {
-    event DebugVerification(uint256[24] proof, uint256[2] pubSignals);
-
     // Omega
     uint256 constant w1 = 19540430494807482326159819597004422086093766032135589407132600596362845576832;    
     // Scalar field size
@@ -122,9 +120,7 @@ contract PlonkVerifier {
     
     uint16 constant lastMem = 864;
 
-    function verifyProof(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) public returns (bool) {
-        emit DebugVerification(_proof, _pubSignals);
-        
+    function verifyProof(uint256[24] calldata _proof, uint256[2] calldata _pubSignals) public view returns (bool) {
         assembly {
             /////////
             // Computes the inverse using the extended euclidean algorithm

@@ -3,7 +3,7 @@ const fs = require("fs");
 
 // Load the ABI and contract address
 const verifierABI = require("../build/contracts/PlonkVerifier.json");
-const contractAddress = "0x23F8530bd28D1A958a3BD26d8fFcDF592c363074"; // Update with your deployed contract address
+const contractAddress = "0xE2594D0c88E2bEdF51639670aC8E10C41D4F2adb"; // Update with your deployed contract address
 
 // Connect to Ganache
 const web3 = new Web3("http://127.0.0.1:7545");
@@ -27,7 +27,10 @@ function loadProof() {
         }
 
         // 🔹 Convert hexadecimal public signals to uint256 format
-        publicSignals = publicSignals.map(hex => BigInt(hex).toString());
+        publicSignals = publicSignals.map(signal => {
+            const bigIntValue = BigInt(signal);  // Convert string to BigInt
+            return "0x" + bigIntValue.toString(16).padStart(64, "0");  // Convert BigInt to 0x-prefixed uint256 hex value
+        });
 
         console.log("📌 Fixed Public Signals:", publicSignals);
         return { proof, publicSignals };
@@ -36,9 +39,6 @@ function loadProof() {
         process.exit(1);
     }
 }
-
-
-
 
 // ✅ Fix: Convert Plonk proof hex values to uint256[]
 function formatProof(proofData) {
@@ -57,7 +57,7 @@ function formatProof(proofData) {
         proofData.eval_a,
         proofData.eval_b,
         proofData.eval_c,
-    ].map(val => "0x" + BigInt(val).toString(16));  // Convert all values to uint256 (Solidity format)
+    ].map(val => "0x" + BigInt(val).toString(16).padStart(64, "0"));  // Convert all values to uint256 (Solidity format)
 }
 
 async function getDebugEvents() {
@@ -74,12 +74,12 @@ async function verifyProof() {
     console.log("📌 Type of publicSignals:", typeof publicSignals, Array.isArray(publicSignals));
     console.log("📌 Formatted Proof Length:", formattedProof.length); // Should be 24
     console.log("Public Signals Length:", publicSignals.length); // Should be 2
-    console.log("📌 Formatted Proof:", formattedProof);
-    console.log("📌 Public Signals:", publicSignals);
+    
+    // 🔹 Log formatted proof before calling Solidity
+    console.log("📌 Formatted Proof Sent to Solidity:", formattedProof);
+    console.log("📌 Public Signals Sent to Solidity:", publicSignals);
 
     try {
-        //console.log("📌 Contract ABI expects:", verifierContract.methods.verifyProof._method.inputs);
-
         const accounts = await web3.eth.getAccounts();
         const sender = accounts[0];
 
