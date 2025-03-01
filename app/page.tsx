@@ -230,10 +230,10 @@ export default function User() {
                   className="w-[20%] aspect-square bg-gray-800 text-2xl text-white rounded-full shadow-md hover:bg-gray-700"
                   onClick={nextCard}
                 >
-                  ▶
-                </button>
-              )}
-            </div>
+                  Generate Proof
+                </button>)}
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-red-500">No registered institutions found.</p>
