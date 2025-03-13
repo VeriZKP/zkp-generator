@@ -1,7 +1,7 @@
 {
   "name": "nextjs",
   "version": "0.1.0",
-  "type": "module",
+  "type": "commonjs",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -18,6 +18,8 @@
     "ipfs-core": "^0.18.1",
     "ipfs-http-client": "^60.0.1",
     "jsqr": "^1.4.0",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.5.1",
     "next": "15.1.6",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
