@@ -109,8 +109,6 @@ export default function User() {
         })
       );
 
-      console.log(updatedTokenDataList);
-
       setUserNFTs(updatedTokenDataList);
     } catch (error) {
       console.error("🚨 Error fetching NFTs:", error);
@@ -119,11 +117,50 @@ export default function User() {
     }
   };
 
-  const generateQRCode = () => {
-    setQrValue("YaoHao was gay before he met P"); // Placeholder content for now
-    setShowModal(true);
-  };
+  const generateQRCode = async () => {
+    try {
+      // if (userNFTs.length === 0) {
+      //   alert("❌ No NFTs found.");
+      //   return;
+      // }
 
+      // const nft = userNFTs[currentIndex];
+      // if (!nft.metadata) {
+      //   alert("❌ NFT metadata is missing.");
+      //   return;
+      // }
+
+      // // ✅ Extract metadata for proof generation
+      // const proofPayload = new FormData();
+      // proofPayload.append("institution", nft.metadata.institution);
+      // proofPayload.append("position", nft.metadata.position);
+      // proofPayload.append("name", nft.metadata.name);
+      // proofPayload.append("idNumber", nft.metadata.id_hashed); // Use hashed ID
+
+      // ✅ Call API to generate proof
+      const response = await fetch("/api/upload-pinata", {
+        method: "POST",
+        // body: proofPayload,
+      });
+
+      console.log("after");
+
+      if (!response.ok) {
+        throw new Error("❌ Failed to generate proof.");
+      }
+
+      const { ipfsHash } = await response.json();
+      console.log("✅ Proof stored on Pinata:", ipfsHash);
+
+      // ✅ Set the QR Code to the IPFS hash link
+      const qrCodeLink = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY}/ipfs/${ipfsHash}`;
+      setQrValue(qrCodeLink);
+      setShowModal(true);
+    } catch (error) {
+      console.error("🚨 Error generating QR Code:", error);
+      alert("❌ Failed to generate QR Code.");
+    }
+  };
   const closeModal = () => {
     setShowModal(false);
   };
