@@ -4,11 +4,16 @@ import { PinataSDK } from "pinata-web3";
 const fs = require("fs");
 const snarkjs = require("snarkjs");
 
+export const config = {
+  runtime: "nodejs", // ✅ Ensure Node.js runtime
+};
+
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT!,
   pinataGateway: process.env.PINATA_GATEWAY!,
 });
 
+// ✅ Temporary paths where files will be saved locally before usage
 const wasmPath = "circom/position.wasm";
 const zkeyPath = "circom/position_final.zkey";
 
@@ -34,7 +39,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
     // ✅ Prepare input for Circom circuit
     const input = {
       position: BigInt(position.length).toString(),
