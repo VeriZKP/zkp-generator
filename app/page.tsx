@@ -73,6 +73,13 @@ export default function User() {
       // ✅ Fetch all issued NFTs from smart contract
       const tokens = await getAllReceivedTokens(signer);
 
+      // 🔍 Check for null or empty tokens
+      if (!tokens || tokens.length === 0) {
+        alert("ℹ️ No NFTs found for this wallet.");
+        setUserNFTs([]); // Ensure state is updated to reflect no NFTs
+        return;
+      }
+
       // ✅ Create dictionary with metadata set to null initially
       const tokenDataList: NFT[] = tokens.map(
         (token: {
@@ -114,8 +121,6 @@ export default function User() {
         })
       );
 
-      console.log(updatedTokenDataList);
-
       setUserNFTs(updatedTokenDataList);
     } catch (error) {
       console.error("🚨 Error fetching NFTs:", error);
@@ -125,7 +130,7 @@ export default function User() {
   };
 
   const generateQRCode = () => {
-    setQrValue("YaoHao was gay before he met P"); // Placeholder content for now
+    setQrValue("This is a QR code"); // Placeholder content for now
     setShowModal(true);
   };
 

@@ -54,8 +54,6 @@ const getContract = async (signer?: ethers.Signer) => {
   const contractAddr = await fetchContractAddress(); // Ensure contract address is fetched
   const contractABI = await fetchABI();
 
-  console.log(contractABI);
-
   return new ethers.Contract(
     contractAddr,
     contractABI, // Ensure ABI is correctly structured
