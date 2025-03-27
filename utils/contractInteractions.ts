@@ -1,25 +1,42 @@
-import { ethers } from "ethers";
-import SoulboundABI from "./Soulbound.json";
+import { InterfaceAbi, ethers } from "ethers";
 
+let SoulboundABI: InterfaceAbi | [] = [];
 let contractAddress: string | null = null; // Store the contract address after first fetch
 
 // ✅ Function to Fetch Contract Address Securely
 const fetchContractAddress = async () => {
   if (!contractAddress) {
-    try {
-      const response = await fetch("/api/get-contract-address");
-      const data = await response.json();
-      contractAddress = data.contractAddress;
-
-      if (!contractAddress) {
-        throw new Error("❌ Contract address is missing.");
+    // ✅ First try localStorage (user input popup)
+    const stored = localStorage.getItem("contractAddress");
+    if (stored) {
+      contractAddress = stored;
+    } else {
+      // ✅ Fallback to API if not in localStorage
+      try {
+        const response = await fetch("/api/get-contract-address");
+        const data = await response.json();
+        contractAddress = data.contractAddress;
+      } catch (error) {
+        console.error("❌ Error fetching contract address:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("❌ Error fetching contract address:", error);
-      throw error;
+    }
+
+    if (!contractAddress) {
+      throw new Error("❌ Contract address is missing.");
     }
   }
+
   return contractAddress;
+};
+
+const fetchABI = async () => {
+  if (!SoulboundABI || SoulboundABI.length === 0) {
+    const storedABI = localStorage.getItem("contractABI");
+    if (!storedABI) throw new Error("❌ ABI not found in localStorage");
+    SoulboundABI = JSON.parse(storedABI);
+  }
+  return SoulboundABI;
 };
 
 // ✅ Function to Get Provider (MetaMask or Ganache)
@@ -35,10 +52,13 @@ const getProvider = () => {
 const getContract = async (signer?: ethers.Signer) => {
   const provider = getProvider();
   const contractAddr = await fetchContractAddress(); // Ensure contract address is fetched
+  const contractABI = await fetchABI();
+
+  console.log(contractABI);
 
   return new ethers.Contract(
     contractAddr,
-    SoulboundABI, // Ensure ABI is correctly structured
+    contractABI, // Ensure ABI is correctly structured
     signer || (await provider.getSigner()) // Await provider if MetaMask is used
   );
 };
