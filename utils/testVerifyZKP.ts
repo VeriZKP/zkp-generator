@@ -1,1 +1,0 @@
-// ca and abi of verifyZKP.sol

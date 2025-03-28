@@ -1,7 +1,7 @@
 {
   "name": "nextjs",
   "version": "0.1.0",
-  "type": "commonjs",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
-    "@types/node": "^20",
+    "@types/node": "^20.17.25",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
